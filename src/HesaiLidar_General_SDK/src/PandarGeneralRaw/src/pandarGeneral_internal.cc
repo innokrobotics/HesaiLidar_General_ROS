@@ -133,6 +133,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(
   got_lidar_correction_flag = false;
   correction_file_path_ = lidar_correction_file;
   m_bCoordinateCorrectionFlag = coordinate_correction_flag;
+  manage_tf_buffer();
   Init();
 }
 
@@ -183,6 +184,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(std::string pcap_path, \
   got_lidar_correction_flag = false;
   correction_file_path_ = lidar_correction_file;
   m_bCoordinateCorrectionFlag = coordinate_correction_flag;
+  manage_tf_buffer();
   Init();
 }
 
