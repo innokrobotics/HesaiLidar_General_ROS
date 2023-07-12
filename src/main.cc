@@ -80,7 +80,6 @@ public:
         }
       }
     }
-    ros::Timer timer = nh.createTimer(ros::Duration(this->publish_timeout_), this->timerCallback);
     else if ("rosbag" == dataType){
       hsdk = new PandarGeneralSDK("", boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
       static_cast<int>(startAngle * 100 + 0.5), 0, pclDataType, lidarType, frameId, m_sTimestampType, \
@@ -102,9 +101,12 @@ public:
     } else {
         printf("create sdk fail\n");
     }
+
+    ros::Timer timer = nh.createTimer(ros::Duration(this->publish_timeout_), &HesaiLidarClient::timerCallback, this);
+    this->last_pc_pub_time =  ros::Time::now();
   }
 
-  void timerCallback()
+  void timerCallback(const ros::TimerEvent&)
   {
     if ((ros::Time::now() - this->last_pc_pub_time).toSec() > this->publish_timeout_)
     {
