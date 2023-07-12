@@ -18,6 +18,7 @@
 	<arg name="coordinate_correction_flag"  default="false"/>
 	<arg name="fixed_frame"  default=""/>
 	<arg name="target_frame"  default=""/>
+	<arg name="publish_timeout"  default="5"/>
 
 	<node pkg="hesai_lidar" name="hesai_lidar" ns="$(arg namespace)" type="hesai_lidar_node" output="screen" >
 		<param name="pcap_file" type="string" value="$(arg pcap_file)"/>
@@ -36,5 +37,6 @@
 		<param name="coordinate_correction_flag"  type="bool" value="$(arg coordinate_correction_flag)"/>
 		<param name="fixed_frame"  type="string" value="$(arg fixed_frame)"/>
 		<param name="target_frame"  type="string" value="$(arg target_frame)"/>
+		<param name="publish_timeout"  type="int" value="$(arg publish_timeout)"/>
 	</node>
 </launch>

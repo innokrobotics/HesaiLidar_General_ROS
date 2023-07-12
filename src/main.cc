@@ -49,6 +49,7 @@ public:
     nh.getParam("coordinate_correction_flag", coordinateCorrectionFlag);
     nh.getParam("target_frame", targetFrame);
     nh.getParam("fixed_frame", fixedFrame);
+    nh.param<int>("publish_timeout", publish_timeout_, 5);
   
     if(!pcapFile.empty()){
       hsdk = new PandarGeneralSDK(pcapFile, boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
@@ -79,6 +80,7 @@ public:
         }
       }
     }
+    ros::Timer timer = nh.createTimer(ros::Duration(this->publish_timeout_), this->timerCallback);
     else if ("rosbag" == dataType){
       hsdk = new PandarGeneralSDK("", boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
       static_cast<int>(startAngle * 100 + 0.5), 0, pclDataType, lidarType, frameId, m_sTimestampType, \
@@ -102,6 +104,15 @@ public:
     }
   }
 
+  void timerCallback()
+  {
+    if ((ros::Time::now() - this->last_pc_pub_time).toSec() > this->publish_timeout_)
+    {
+      ROS_WARN_STREAM("No data from Hesai Lidar for more than " << this->publish_timeout_ << "s; restarting node..");
+      ros::shutdown();
+    }
+  }
+
   void lidarCallback(boost::shared_ptr<PPointCloud> cld, double timestamp, hesai_lidar::PandarScanPtr scan) // the timestamp from first point cloud of cld
   {
     if(m_sPublishType == "both" || m_sPublishType == "points"){
@@ -109,6 +120,7 @@ public:
       sensor_msgs::PointCloud2 output;
       pcl::toROSMsg(*cld, output);
       lidarPublisher.publish(output);
+      this->last_pc_pub_time =  ros::Time::now();
 #ifdef PRINT_FLAG
         printf("timestamp: %f, point size: %ld.\n",timestamp, cld->points.size());
 #endif        
@@ -140,6 +152,9 @@ private:
   string m_sPublishType;
   string m_sTimestampType;
   ros::Subscriber packetSubscriber;
+
+  ros::Time last_pc_pub_time;
+  int publish_timeout_;
 };
 
 int main(int argc, char **argv)
