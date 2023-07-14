@@ -19,7 +19,7 @@
 	<arg name="manager" default="pandar_nodelet_manager" />
 	<arg name="fixed_frame"  default=""/>
 	<arg name="target_frame"  default=""/>
-	<arg name="publish_timeout"  default="5"/>
+	<arg name="publish_timeout"  default="10"/>
 	 <!-- start nodelet manager -->
 	<!-- <node pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" /> -->
     <node pkg="nodelet" type="nodelet" name="$(arg manager)" ns="$(arg namespace)" args="manager" output="screen" />

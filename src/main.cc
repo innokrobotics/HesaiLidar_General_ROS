@@ -49,7 +49,7 @@ public:
     nh.getParam("coordinate_correction_flag", coordinateCorrectionFlag);
     nh.getParam("target_frame", targetFrame);
     nh.getParam("fixed_frame", fixedFrame);
-    nh.param<int>("publish_timeout", publish_timeout_, 5);
+    nh.param<int>("publish_timeout", publish_timeout_, 10);
   
     if(!pcapFile.empty()){
       hsdk = new PandarGeneralSDK(pcapFile, boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
@@ -102,7 +102,7 @@ public:
         printf("create sdk fail\n");
     }
 
-    ros::Timer timer = nh.createTimer(ros::Duration(this->publish_timeout_), &HesaiLidarClient::timerCallback, this);
+    this->timer = node.createTimer(ros::Duration(this->publish_timeout_), &HesaiLidarClient::timerCallback, this);
     this->last_pc_pub_time =  ros::Time::now();
   }
 
@@ -110,7 +110,7 @@ public:
   {
     if ((ros::Time::now() - this->last_pc_pub_time).toSec() > this->publish_timeout_)
     {
-      ROS_WARN_STREAM("No data from Hesai Lidar for more than " << this->publish_timeout_ << "s; restarting node..");
+      ROS_ERROR_STREAM("No data from Hesai Lidar for more than " << this->publish_timeout_ << "s; restarting node..");
       ros::shutdown();
     }
   }
@@ -155,6 +155,7 @@ private:
   string m_sTimestampType;
   ros::Subscriber packetSubscriber;
 
+  ros::Timer timer;
   ros::Time last_pc_pub_time;
   int publish_timeout_;
 };
