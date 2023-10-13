@@ -19,10 +19,11 @@
 	<arg name="manager" default="pandar_nodelet_manager" />
 	<arg name="fixed_frame"  default=""/>
 	<arg name="target_frame"  default=""/>
+	<arg name="publish_timeout"  default="10"/>
 	 <!-- start nodelet manager -->
 	<!-- <node pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" /> -->
     <node pkg="nodelet" type="nodelet" name="$(arg manager)" ns="$(arg namespace)" args="manager" output="screen" />
-	<node pkg="nodelet" type="nodelet" name="$(arg manager)_cloud" ns="$(arg namespace)" args="load pandar_pointcloud/CloudNodelet $(arg manager)" output="screen">
+	<node pkg="nodelet" type="nodelet" name="$(arg manager)_cloud" ns="$(arg namespace)" args="load pandar_pointcloud/CloudNodelet $(arg manager)" output="screen" respawn="true" launch-prefix="nice -n -10">
 		<param name="pcap_file" type="string" value="$(arg pcap_file)"/>
 		<param name="server_ip" type="string" value="$(arg server_ip)"/>
 		<param name="lidar_recv_port"  type="int" value="$(arg lidar_recv_port)"/>
@@ -39,5 +40,6 @@
 		<param name="coordinate_correction_flag"  type="bool" value="$(arg coordinate_correction_flag)"/>
 		<param name="fixed_frame"  type="string" value="$(arg fixed_frame)"/>
 		<param name="target_frame"  type="string" value="$(arg target_frame)"/>
+		<param name="publish_timeout"  type="int" value="$(arg publish_timeout)"/>
 	</node>
 </launch>
