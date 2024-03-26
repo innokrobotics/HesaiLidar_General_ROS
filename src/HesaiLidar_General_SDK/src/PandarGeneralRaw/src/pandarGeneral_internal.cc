@@ -88,7 +88,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(
     boost::function<void(double)> gps_callback, uint16_t start_angle, int tz,
     int pcl_type, std::string lidar_type, std::string frame_id, std::string timestampType,
     std::string lidar_correction_file, std::string multicast_ip, bool coordinate_correction_flag,
-    std::string target_frame, std::string fixed_frame) {
+    std::string target_frame, std::string fixed_frame, bool is_dense) {
       // LOG_FUNC();
   pthread_mutex_init(&lidar_lock_, NULL);
   sem_init(&lidar_sem_, 0, 0);
@@ -126,6 +126,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(
 
   tz_second_ = tz * 3600;
   pcl_type_ = pcl_type;
+  is_dense_ = is_dense;
   connect_lidar_ = true;
   pcap_reader_ = NULL;
   m_sTimestampType = timestampType;
@@ -142,7 +143,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(std::string pcap_path, \
     pcl_callback, uint16_t start_angle, int tz, int pcl_type, \
     std::string lidar_type, std::string frame_id, std::string timestampType,
     std::string lidar_correction_file, bool coordinate_correction_flag,
-    std::string target_frame, std::string fixed_frame) {
+    std::string target_frame, std::string fixed_frame, bool is_dense) {
   pthread_mutex_init(&lidar_lock_, NULL);
   sem_init(&lidar_sem_, 0, 0);
 
@@ -178,6 +179,7 @@ PandarGeneral_Internal::PandarGeneral_Internal(std::string pcap_path, \
   }
   tz_second_ = tz * 3600;
   pcl_type_ = pcl_type;
+  is_dense_ = is_dense;
   connect_lidar_ = false;
   m_sTimestampType = timestampType;
   m_dPktTimestamp = 0.0f;
@@ -1805,6 +1807,24 @@ void PandarGeneral_Internal::CalcXTPointXYZIT(HS_LIDAR_XT_Packet *pkt, int block
 
     /* skip wrong points */
     if (unit.distance <= 0.1 || unit.distance > 200.0) {
+      if (!is_dense_) {
+        point.x = NAN;
+        point.y = NAN;
+        point.z = NAN;
+        point.intensity = 0;
+        if ("realtime" == m_sTimestampType) {
+          point.timestamp = m_dPktTimestamp;
+        } else {
+          point.timestamp = pkt->timestamp_point + tz_second_;
+        }
+        point.ring = i;
+        if (pcl_type_) {
+        	m_vPointCloudList[i].push_back(point);
+        } else {
+          m_vPointCloud[m_iPointCloudIndex] = point;
+          m_iPointCloudIndex++;
+        }
+      }
       continue;
     }
 

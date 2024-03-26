@@ -32,6 +32,7 @@ public:
     bool coordinateCorrectionFlag;
     string targetFrame;
     string fixedFrame;
+    bool dense_cloud;
 
     nh.getParam("pcap_file", pcapFile);
     nh.getParam("server_ip", serverIp);
@@ -49,12 +50,13 @@ public:
     nh.getParam("coordinate_correction_flag", coordinateCorrectionFlag);
     nh.getParam("target_frame", targetFrame);
     nh.getParam("fixed_frame", fixedFrame);
+    nh.param<bool>("dense_cloud", dense_cloud, true);
     nh.param<int>("publish_timeout", publish_timeout_, 10);
   
     if(!pcapFile.empty()){
       hsdk = new PandarGeneralSDK(pcapFile, boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
       static_cast<int>(startAngle * 100 + 0.5), 0, pclDataType, lidarType, frameId, m_sTimestampType, lidarCorrectionFile, \
-      coordinateCorrectionFlag, targetFrame, fixedFrame);
+      coordinateCorrectionFlag, targetFrame, fixedFrame, dense_cloud);
       if (hsdk != NULL) {
         std::ifstream fin(lidarCorrectionFile);
         if (fin.is_open()) {
@@ -83,7 +85,7 @@ public:
     else if ("rosbag" == dataType){
       hsdk = new PandarGeneralSDK("", boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
       static_cast<int>(startAngle * 100 + 0.5), 0, pclDataType, lidarType, frameId, m_sTimestampType, \
-      lidarCorrectionFile, coordinateCorrectionFlag, targetFrame, fixedFrame);
+      lidarCorrectionFile, coordinateCorrectionFlag, targetFrame, fixedFrame, dense_cloud);
       if (hsdk != NULL) {
         packetSubscriber = node.subscribe("pandar_packets",10,&HesaiLidarClient::scanCallback, (HesaiLidarClient*)this, ros::TransportHints().tcpNoDelay(true));
       }
@@ -92,7 +94,7 @@ public:
       hsdk = new PandarGeneralSDK(serverIp, lidarRecvPort, gpsPort, \
         boost::bind(&HesaiLidarClient::lidarCallback, this, _1, _2, _3), \
         boost::bind(&HesaiLidarClient::gpsCallback, this, _1), static_cast<int>(startAngle * 100 + 0.5), 0, pclDataType, lidarType, frameId,\
-         m_sTimestampType, lidarCorrectionFile, multicastIp, coordinateCorrectionFlag, targetFrame, fixedFrame);
+         m_sTimestampType, lidarCorrectionFile, multicastIp, coordinateCorrectionFlag, targetFrame, fixedFrame, dense_cloud);
     }
     
     if (hsdk != NULL) {
@@ -121,6 +123,7 @@ public:
       pcl_conversions::toPCL(ros::Time::now(), cld->header.stamp);
       sensor_msgs::PointCloud2 output;
       pcl::toROSMsg(*cld, output);
+      output.is_dense = dense_cloud;
       lidarPublisher.publish(output);
       this->last_pc_pub_time =  ros::Time::now();
 #ifdef PRINT_FLAG

@@ -345,7 +345,7 @@ class PandarGeneral_Internal {
           pcl_callback, boost::function<void(double)> gps_callback, 
           uint16_t start_angle, int tz, int pcl_type, std::string lidar_type, std::string frame_id, std::string timestampType, // the default timestamp type is LiDAR time
           std::string lidar_correction_file, std::string multicast_ip, bool coordinate_correction_flag,
-          std::string target_frame, std::string fixed_frame);
+          std::string target_frame, std::string fixed_frame, bool is_dense);
 
   /**
    * @brief Constructor
@@ -362,7 +362,7 @@ class PandarGeneral_Internal {
       pcl_callback, uint16_t start_angle, int tz, int pcl_type, \
       std::string lidar_type, std::string frame_id, std::string timestampType, // the default timestamp type is LiDAR time
       std::string lidar_correction_file, bool coordinate_correction_flag, \
-      std::string target_frame, std::string fixed_frame);
+      std::string target_frame, std::string fixed_frame, bool is_dense);
   ~PandarGeneral_Internal();
 
   /**
@@ -481,6 +481,7 @@ class PandarGeneral_Internal {
   int tz_second_;
   std::string m_sFrameId;
   int pcl_type_;
+  bool is_dense_;
   PcapReader *pcap_reader_;
   bool connect_lidar_;
   std::string m_sLidarType;

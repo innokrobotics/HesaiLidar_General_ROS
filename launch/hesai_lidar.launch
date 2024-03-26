@@ -9,6 +9,7 @@
 	<!--"frame_id" represents the id of the point cloud data published to ROS-->
 	<arg name="frame_id" default=""/>
 	<arg name="pcldata_type" default="0"/>
+	<arg name="dense_cloud" default="true"/>
 	<arg name="publish_type" default="points"/>
 	<arg name="timestamp_type" default=""/>
 	<arg name="data_type" default=""/>
@@ -29,6 +30,7 @@
 		<param name="lidar_type"  type="string" value="$(arg lidar_type)"/>
 		<param name="frame_id"  type="string" value="$(arg frame_id)"/>
 		<param name="pcldata_type"  type="int" value="$(arg pcldata_type)"/>
+		<param name="dense_cloud"  type="bool" value="$(arg dense_cloud)"/>
 		<param name="publish_type"  type="string" value="$(arg publish_type)"/>
 		<param name="timestamp_type"  type="string" value="$(arg timestamp_type)"/>
 		<param name="data_type"  type="string" value="$(arg data_type)"/>
