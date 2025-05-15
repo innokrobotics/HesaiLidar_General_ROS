@@ -21,6 +21,9 @@
 	<arg name="target_frame"  default=""/>
 	<arg name="publish_timeout"  default="10"/>
 
+    <node pkg="hesai_lidar" name="sensor_status_server" type="hesai_sleep_mode_server.py" output="screen" respawn="true">
+		<param name="server_ip" type="string" value="$(arg server_ip)"/>
+	</node>
 	<node pkg="hesai_lidar" name="hesai_lidar" ns="$(arg namespace)" type="hesai_lidar_node" output="screen" respawn="true" launch-prefix="nice -n -10">
 		<param name="pcap_file" type="string" value="$(arg pcap_file)"/>
 		<param name="server_ip" type="string" value="$(arg server_ip)"/>

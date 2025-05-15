@@ -44,4 +44,7 @@
 		<param name="target_frame"  type="string" value="$(arg target_frame)"/>
 		<param name="publish_timeout"  type="int" value="$(arg publish_timeout)"/>
 	</node>
+    <node pkg="hesai_lidar" name="sensor_status_server" type="hesai_sleep_mode_server.py" output="screen" respawn="true">
+		<param name="server_ip" type="string" value="$(arg server_ip)"/>
+	</node>
 </launch>
