@@ -120,6 +120,12 @@ target_link_libraries(cloud_nodelet
     PandarGeneralSDK
 )
 
+install(PROGRAMS
+  src/hesai_sleep_mode_server.py
+  src/hesai_sleep_mode_client.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 install(TARGETS
     hesai_lidar_node
     PandarGeneral
