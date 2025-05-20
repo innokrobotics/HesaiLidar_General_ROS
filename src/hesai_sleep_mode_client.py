@@ -13,7 +13,7 @@ def send_request(state):
         rospy.logerr(f"Service erreur : {e}")
 
 def main():
-    rospy.init_node("sensor_status_client")
+    rospy.init_node("hesai_sleep_mode_client")
     while True:
         state_sensor = input("Enter 'True' to turn on lidar, 'False' otherwise: ").lower()
         if state_sensor in ["true", "false"]:

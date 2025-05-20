@@ -27,7 +27,7 @@ def handle_sensor_status(req):
         return SetBoolResponse(success=False)
 
 def main():
-    rospy.init_node("sensor_status_server")
+    rospy.init_node("hesai_sleep_mode_server")
     service = rospy.Service("sensor_status", SetBool, handle_sensor_status)
     rospy.loginfo("Service SensorStatus ready.")
     rospy.spin()
